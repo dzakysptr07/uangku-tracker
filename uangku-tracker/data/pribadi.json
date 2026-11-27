@@ -1,0 +1,164 @@
+{
+  "workspaceId": "pribadi",
+  "revision": 2,
+  "updatedAt": "2026-11-27T05:43:51.251Z",
+  "targetSavingsRate": 20,
+  "pinHash": null,
+  "categories": [
+    {
+      "id": "makan",
+      "name": "Makan & Minum",
+      "icon": "🍜",
+      "type": "expense",
+      "bucket": "needs",
+      "color": "#f97316"
+    },
+    {
+      "id": "kopi",
+      "name": "Kopi & Jajan",
+      "icon": "☕",
+      "type": "expense",
+      "bucket": "wants",
+      "color": "#eab308"
+    },
+    {
+      "id": "transport",
+      "name": "Transportasi",
+      "icon": "🛵",
+      "type": "expense",
+      "bucket": "needs",
+      "color": "#3b82f6"
+    },
+    {
+      "id": "tagihan",
+      "name": "Tagihan & Kos",
+      "icon": "🏠",
+      "type": "expense",
+      "bucket": "needs",
+      "color": "#8b5cf6"
+    },
+    {
+      "id": "belanja",
+      "name": "Belanja & Kebutuhan",
+      "icon": "🛒",
+      "type": "expense",
+      "bucket": "needs",
+      "color": "#14b8a6"
+    },
+    {
+      "id": "hiburan",
+      "name": "Hiburan & Langganan",
+      "icon": "🎬",
+      "type": "expense",
+      "bucket": "wants",
+      "color": "#ec4899"
+    },
+    {
+      "id": "kesehatan",
+      "name": "Kesehatan",
+      "icon": "💊",
+      "type": "expense",
+      "bucket": "needs",
+      "color": "#ef4444"
+    },
+    {
+      "id": "pendidikan",
+      "name": "Pendidikan & Buku",
+      "icon": "📚",
+      "type": "expense",
+      "bucket": "needs",
+      "color": "#06b6d4"
+    },
+    {
+      "id": "tabungan",
+      "name": "Tabungan & Investasi",
+      "icon": "💎",
+      "type": "expense",
+      "bucket": "savings",
+      "color": "#10b981"
+    },
+    {
+      "id": "lainnya",
+      "name": "Lain-lain",
+      "icon": "📦",
+      "type": "expense",
+      "bucket": "wants",
+      "color": "#64748b"
+    },
+    {
+      "id": "gaji",
+      "name": "Gaji & Utama",
+      "icon": "💼",
+      "type": "income",
+      "bucket": "income",
+      "color": "#22c55e"
+    },
+    {
+      "id": "bonus",
+      "name": "Bonus & Freelance",
+      "icon": "🚀",
+      "type": "income",
+      "bucket": "income",
+      "color": "#0ea5e9"
+    },
+    {
+      "id": "invest_return",
+      "name": "Hasil Investasi",
+      "icon": "📈",
+      "type": "income",
+      "bucket": "income",
+      "color": "#10b981"
+    },
+    {
+      "id": "masuk_lain",
+      "name": "Pemasukan Lain",
+      "icon": "🎁",
+      "type": "income",
+      "bucket": "income",
+      "color": "#84cc16"
+    }
+  ],
+  "wallets": [
+    {
+      "id": "tunai",
+      "name": "Tunai / Dompet",
+      "icon": "💵",
+      "initialBalance": 0
+    },
+    {
+      "id": "bank",
+      "name": "Rekening Bank",
+      "icon": "🏦",
+      "initialBalance": 0
+    },
+    {
+      "id": "ewallet",
+      "name": "E-Wallet / QRIS",
+      "icon": "📱",
+      "initialBalance": 0
+    }
+  ],
+  "budgets": {
+    "makan": 1500000,
+    "kopi": 400000,
+    "transport": 600000,
+    "tagihan": 1500000,
+    "belanja": 750000,
+    "hiburan": 400000
+  },
+  "transactions": [
+    {
+      "id": "tx_1795758231239_qr06g",
+      "type": "income",
+      "amount": 5000001,
+      "category": "gaji",
+      "wallet": "bank",
+      "date": "2026-11-27",
+      "note": "Sangu mamah",
+      "device": "desktop",
+      "deleted": false,
+      "createdAt": "2026-11-27T05:43:51.252Z",
+      "updatedAt": "2026-11-27T05:43:51.239Z"
+    }
+  ]
+}

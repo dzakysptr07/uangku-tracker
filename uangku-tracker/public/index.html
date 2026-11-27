@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#10b981" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>UangKu — Catatan & Rekomendasi Keuangan</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="/icons/icon-192.png" alt="UangKu" class="brand-icon" />
+        <div>
+          <div class="brand-title">UangKu</div>
+          <div class="brand-sub">Desktop &amp; Android Sync</div>
+        </div>
+      </div>
+
+      <nav class="side-nav" aria-label="Navigasi Utama">
+        <button class="nav-btn active" data-tab="dashboard">📊 Ringkasan</button>
+        <button class="nav-btn" data-tab="transaksi">🧾 Catatan Transaksi</button>
+        <button class="nav-btn" data-tab="rekap">🎯 Rekap &amp; Budget</button>
+        <button class="nav-btn" data-tab="rekomendasi">💡 Rekomendasi</button>
+        <button class="nav-btn" data-tab="pengaturan">🔄 Sync &amp; Pengaturan</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="btnAddDesktop" class="btn btn-primary btn-block">+ Catat Transaksi</button>
+        <div class="sync-pill" id="syncBadgeDesktop">
+          <span class="dot"></span>
+          <span class="sync-text">Menghubungkan...</span>
+        </div>
+        <button id="btnInstallPwaSidebar" class="btn btn-ghost btn-block hidden">📲 Install Aplikasi</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrap">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-brand" data-tab="dashboard">
+            <img src="/icons/icon-192.png" alt="UangKu" class="mobile-logo" />
+            <span>UangKu</span>
+          </button>
+          <div class="month-switcher">
+            <button id="btnPrevMonth" class="icon-btn" title="Bulan Sebelumnya" aria-label="Bulan Sebelumnya">◀</button>
+            <input type="month" id="monthPicker" aria-label="Pilih Bulan" />
+            <button id="btnNextMonth" class="icon-btn" title="Bulan Berikutnya" aria-label="Bulan Berikutnya">▶</button>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="sync-pill mobile-only" id="syncBadgeMobile">
+            <span class="dot"></span>
+            <span class="sync-text">Sync</span>
+          </div>
+          <button id="btnForceSync" class="icon-btn" title="Sinkronkan Sekarang" aria-label="Sinkronkan Sekarang">🔄</button>
+          <button id="btnInstallPwaTop" class="btn btn-sm btn-outline hidden">📲 Install</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- Empty / Welcome Banner -->
+        <section id="emptyBanner" class="card banner-empty hidden">
+          <div>
+            <h3>Belum ada catatan di bulan ini</h3>
+            <p>Mulai catat pemasukan &amp; pengeluaranmu sekarang, atau muat data contoh untuk melihat simulasi rekap dan rekomendasi keuangan.</p>
+          </div>
+          <div class="banner-actions">
+            <button id="btnQuickAddEmpty" class="btn btn-primary">+ Catat Pertama</button>
+            <button id="btnLoadDemo" class="btn btn-outline">✨ Muat Data Contoh</button>
+          </div>
+        </section>
+
+        <!-- TAB: DASHBOARD -->
+        <section id="tab-dashboard" class="tab-panel active">
+          <div class="kpi-grid">
+            <div class="card kpi-card">
+              <div class="kpi-label">Total Pemasukan</div>
+              <div class="kpi-value text-green" id="kpiIncome">Rp0</div>
+              <div class="kpi-sub" id="kpiIncomeSub">Bulan ini</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label">Total Pengeluaran</div>
+              <div class="kpi-value text-red" id="kpiExpense">Rp0</div>
+              <div class="kpi-sub" id="kpiExpenseSub">Bulan ini</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label">Sisa / Tabungan Efektif</div>
+              <div class="kpi-value" id="kpiCashflow">Rp0</div>
+              <div class="kpi-sub" id="kpiSavingsRate">Rasio tabungan 0%</div>
+            </div>
+            <div class="card kpi-card highlight-card">
+              <div class="kpi-label">Batas Aman / Hari</div>
+              <div class="kpi-value text-emerald" id="kpiSafeDaily">Rp0</div>
+              <div class="kpi-sub" id="kpiSafeDailySub">Sisa hari bulan ini</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>💳 Saldo Dompet &amp; Sumber Dana</h3>
+              <span class="muted small" id="workspaceLabel">Workspace: pribadi</span>
+            </div>
+            <div id="walletStrip" class="wallet-strip"></div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <div class="card-header">
+                <h3>🍩 Kemana Saja Uangku?</h3>
+                <button class="link-btn" data-jump="rekap">Lihat Detail →</button>
+              </div>
+              <div class="donut-layout">
+                <div id="donutChart" class="donut-wrap"></div>
+                <div id="topCategoriesList" class="category-bars"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>📈 Tren Harian Bulan Ini</h3>
+                <span class="muted small">Hijau: Masuk · Merah: Keluar</span>
+              </div>
+              <div id="dailyChart" class="daily-chart"></div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <div class="card-header">
+                <h3>💡 Rekomendasi Prioritas</h3>
+                <button class="link-btn" data-jump="rekomendasi">Semua Saran →</button>
+              </div>
+              <div id="dashboardRecs" class="rec-list"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>🧾 Transaksi Terakhir</h3>
+                <button class="link-btn" data-jump="transaksi">Semua Transaksi →</button>
+              </div>
+              <div id="recentTxList" class="tx-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: TRANSAKSI -->
+        <section id="tab-transaksi" class="tab-panel">
+          <div class="card">
+            <div class="card-header wrap-gap">
+              <h3>🧾 Semua Catatan Keuangan</h3>
+              <div class="row-actions">
+                <button id="btnExportCsv" class="btn btn-sm btn-outline">⬇ Export CSV</button>
+                <button id="btnAddTxTab" class="btn btn-sm btn-primary">+ Catat Baru</button>
+              </div>
+            </div>
+
+            <div class="filter-bar">
+              <input type="search" id="filterSearch" placeholder="Cari catatan / kategori..." />
+              <select id="filterType">
+                <option value="all">Semua Tipe</option>
+                <option value="expense">Pengeluaran</option>
+                <option value="income">Pemasukan</option>
+                <option value="transfer">Transfer Dompet</option>
+              </select>
+              <select id="filterCategory">
+                <option value="all">Semua Kategori</option>
+              </select>
+              <select id="filterWallet">
+                <option value="all">Semua Dompet</option>
+              </select>
+            </div>
+
+            <div id="txSummaryBar" class="tx-summary-bar"></div>
+            <div id="allTxList" class="tx-list"></div>
+          </div>
+        </section>
+
+        <!-- TAB: REKAP & BUDGET -->
+        <section id="tab-rekap" class="tab-panel">
+          <div class="two-col">
+            <div class="card">
+              <div class="card-header">
+                <h3>⚖️ Evaluasi Aturan 50 / 30 / 20</h3>
+                <span class="muted small">Idealnya 50% Kebutuhan · 30% Keinginan · 20% Tabungan</span>
+              </div>
+              <div id="rule503020Box" class="rule-box"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>🔥 5 Pengeluaran Terbesar</h3>
+                <span class="muted small">Bulan terpilih</span>
+              </div>
+              <div id="topExpensesBox" class="tx-list"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header wrap-gap">
+              <div>
+                <h3>🎯 Rekap per Kategori &amp; Batas Budget</h3>
+                <p class="muted small">Klik "Simpan Budget" untuk menentukan batas pengeluaran bulanan tiap kategori.</p>
+              </div>
+              <button id="btnSaveBudgets" class="btn btn-primary btn-sm">💾 Simpan Budget</button>
+            </div>
+            <div id="categoryBudgetTable" class="budget-table"></div>
+          </div>
+        </section>
+
+        <!-- TAB: REKOMENDASI -->
+        <section id="tab-rekomendasi" class="tab-panel">
+          <div class="card score-banner">
+            <div class="score-circle" id="healthScoreCircle">
+              <span id="healthScoreValue">0</span>
+              <small>/100</small>
+            </div>
+            <div class="score-info">
+              <h3 id="healthScoreTitle">Skor Kesehatan Keuangan</h3>
+              <p id="healthScoreDesc" class="muted">Dihitung dari rasio tabungan, kepatuhan budget, dan proporsi pengeluaran gaya hidup.</p>
+              <div class="row-actions">
+                <button id="btnCopyMarkdownRecap" class="btn btn-sm btn-outline">📋 Salin Rekap Markdown</button>
+                <button id="btnDownloadMarkdownRecap" class="btn btn-sm btn-outline">⬇ Unduh Laporan (.md)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <div class="card-header">
+                <h3>🧭 Saran Pengaturan Uang Kedepannya</h3>
+              </div>
+              <div id="fullRecommendationsList" class="rec-list"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header wrap-gap">
+                <div>
+                  <h3>📅 Rekomendasi Budget Bulan Depan</h3>
+                  <p class="muted small">Dihitung otomatis dari pola belanja dan target tabunganmu.</p>
+                </div>
+                <button id="btnApplyNextPlan" class="btn btn-sm btn-primary">✅ Terapkan Semua</button>
+              </div>
+              <div id="nextMonthPlanList" class="plan-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: PENGATURAN & SYNC -->
+        <section id="tab-pengaturan" class="tab-panel">
+          <div class="two-col">
+            <div class="card">
+              <div class="card-header">
+                <h3>🔄 Sinkronisasi Paralel Desktop &amp; Android</h3>
+              </div>
+              <p class="muted small">Gunakan <strong>Kode Workspace</strong> dan <strong>Server URL</strong> yang sama di Desktop dan Android agar semua catatan otomatis tersinkronisasi secara real-time.</p>
+              <form id="syncForm" class="form-stack">
+                <label>
+                  <span>Kode Workspace (Sync Room)</span>
+                  <input type="text" id="inputWorkspaceId" placeholder="mis: pribadi atau keluarga-dzaky" required />
+                </label>
+                <label>
+                  <span>Server Cloud / Lokal URL (opsional, kosongkan jika pakai server saat ini)</span>
+                  <input type="url" id="inputServerUrl" placeholder="https://uangku-kamu.onrender.com" />
+                </label>
+                <label>
+                  <span>PIN Akses Workspace (opsional, untuk keamanan online)</span>
+                  <input type="password" id="inputWorkspacePin" placeholder="Kosongkan jika tanpa PIN" />
+                </label>
+                <label>
+                  <span>Target Rasio Tabungan (%)</span>
+                  <input type="number" id="inputSavingsTarget" min="5" max="80" value="20" />
+                </label>
+                <div class="row-actions">
+                  <button type="submit" class="btn btn-primary">Simpan &amp; Hubungkan</button>
+                  <button type="button" id="btnCopyPairLink" class="btn btn-outline">🔗 Salin Link Pairing Android</button>
+                </div>
+              </form>
+              <div id="lanInfoBox" class="info-callout"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>💾 Backup, Restore &amp; Data Contoh</h3>
+              </div>
+              <div class="form-stack">
+                <p class="muted small">Ekspor seluruh data transaksi dan budget ke JSON untuk cadangan, atau impor kembali kapan saja.</p>
+                <div class="row-actions wrap-gap">
+                  <button id="btnExportJson" class="btn btn-outline">⬇ Backup JSON</button>
+                  <label class="btn btn-outline file-btn">
+                    ⬆ Restore JSON
+                    <input type="file" id="inputImportJson" accept="application/json" hidden />
+                  </label>
+                  <button id="btnSeedDemoSettings" class="btn btn-outline">✨ Tambah Data Contoh</button>
+                </div>
+
+                <hr class="divider" />
+                <h4>📲 Cara Pasang di Android &amp; Desktop</h4>
+                <ol class="guide-list">
+                  <li><strong>Di Desktop (Chrome/Edge):</strong> Klik ikon <em>Install</em> di address bar atau tombol <strong>Install Aplikasi</strong> di sidebar.</li>
+                  <li><strong>Di Android (Chrome):</strong> Buka link yang sama (atau tempel Link Pairing), ketuk menu <strong>⋮ &rarr; Tambahkan ke layar utama / Install app</strong>.</li>
+                  <li><strong>Akses Beda Jaringan:</strong> Deploy folder proyek ini ke layanan cloud gratis (Render / Railway / Netlify / VPS) lalu masukkan URL-nya di kolom Server Cloud di atas.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav" aria-label="Navigasi Mobile">
+      <button class="bnav-btn active" data-tab="dashboard"><span>📊</span><small>Ringkasan</small></button>
+      <button class="bnav-btn" data-tab="transaksi"><span>🧾</span><small>Catatan</small></button>
+      <button class="bnav-fab" id="btnAddMobile" aria-label="Catat Transaksi">+</button>
+      <button class="bnav-btn" data-tab="rekap"><span>🎯</span><small>Rekap</small></button>
+      <button class="bnav-btn" data-tab="rekomendasi"><span>💡</span><small>Saran</small></button>
+    </nav>
+    <button class="mobile-settings-btn" data-tab="pengaturan" title="Sync & Pengaturan" aria-label="Sync & Pengaturan">⚙️</button>
+  </div>
+
+  <!-- Transaction Modal -->
+  <div id="txModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="txModalTitle">
+    <div class="modal-backdrop" id="txModalBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="txModalTitle">Catat Transaksi</h3>
+        <button id="btnCloseTxModal" class="icon-btn" aria-label="Tutup">✕</button>
+      </div>
+      <form id="txForm" class="form-stack">
+        <input type="hidden" id="txId" />
+        <div class="type-pills" role="group" aria-label="Tipe Transaksi">
+          <button type="button" class="type-pill active" data-type="expense">💸 Pengeluaran</button>
+          <button type="button" class="type-pill" data-type="income">💰 Pemasukan</button>
+          <button type="button" class="type-pill" data-type="transfer">🔁 Transfer</button>
+        </div>
+
+        <label>
+          <span>Nominal (Rp)</span>
+          <input type="number" id="txAmount" min="1" step="100" placeholder="25000" required />
+        </label>
+        <div class="quick-amounts">
+          <button type="button" class="chip" data-amt="15000">+15rb</button>
+          <button type="button" class="chip" data-amt="25000">+25rb</button>
+          <button type="button" class="chip" data-amt="50000">+50rb</button>
+          <button type="button" class="chip" data-amt="100000">+100rb</button>
+          <button type="button" class="chip" data-amt="500000">+500rb</button>
+        </div>
+
+        <div class="two-col-form">
+          <label id="txCategoryWrap">
+            <span>Kategori</span>
+            <select id="txCategory"></select>
+          </label>
+          <label>
+            <span>Tanggal</span>
+            <input type="date" id="txDate" required />
+          </label>
+        </div>
+
+        <div class="two-col-form">
+          <label>
+            <span id="txWalletLabel">Sumber Dompet</span>
+            <select id="txWallet"></select>
+          </label>
+          <label id="txToWalletWrap" class="hidden">
+            <span>Ke Dompet Tujuan</span>
+            <select id="txToWallet"></select>
+          </label>
+        </div>
+
+        <label>
+          <span>Catatan / Keterangan</span>
+          <input type="text" id="txNote" maxlength="160" placeholder="mis: Makan siang warteg / Gaji bulan ini" />
+        </label>
+
+        <div class="modal-footer">
+          <button type="button" id="btnCancelTx" class="btn btn-outline">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PIN Unlock Modal -->
+  <div id="pinModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card modal-sm">
+      <h3>🔒 Workspace Terkunci PIN</h3>
+      <p class="muted small">Masukkan PIN workspace untuk menyinkronkan data.</p>
+      <form id="pinUnlockForm" class="form-stack">
+        <input type="password" id="pinUnlockInput" placeholder="Masukkan PIN" required />
+        <button type="submit" class="btn btn-primary btn-block">Buka Workspace</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/analytics.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
